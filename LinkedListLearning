@@ -1,0 +1,175 @@
+/*
+
+链表泛型类的实现
+ */
+
+package ListAndStackAndQueue.LinkedList;
+
+import javafx.scene.control.skin.CellSkinBase;
+
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+
+public class MyLinkedList<T> implements Iterable<T>{
+
+    private int theSize;
+    private int modCount=0;
+    private Node<T> beginMarker;
+    private Node<T> endMarker;
+
+    public MyLinkedList(){
+        doClear();
+    }
+
+    private void doClear() {
+        beginMarker=new Node<>(null,null,null);
+        endMarker=new Node<>(null,beginMarker,null);
+        beginMarker.next=endMarker;
+
+        theSize=0;
+        modCount++;
+    }
+
+    public void clear(){
+        doClear();
+
+    }
+
+
+
+    public boolean isEmpty(){
+        return size()==0;
+    }
+
+    public boolean add(T x){
+        add(size(),x);
+        return true;
+    }
+    public void add(int idx ,T x){
+        addBefore(getNode(idx,0,size()),x);
+    }
+
+    public T get(int idx){
+        return getNode( idx).data;
+    }
+
+    public T set(int idx,T newVal){
+        Node<T> p=getNode(idx);
+        T oldVal=p.data;
+        p.data=newVal;
+        return oldVal;
+    }
+    //获取一个新节点,改变指针完成双链表的插入操作
+    public void addBefore(Node<T> p,T x){
+        Node<T> newNode=new Node<>(x,p.pre,p);
+        newNode.pre.next=newNode;
+        p.pre=newNode;
+        theSize++;
+        modCount++;
+    }
+
+
+
+    @Override
+    public Iterator<T> iterator() {
+        return (Iterator<T>) new LinkedListIterator();
+    }
+
+
+    public int size(){
+        return theSize;
+    }
+
+    private Node<T> getNode(int idx) {
+        return getNode(idx,0,size()-1);
+    }
+
+    public T remove(int idx){
+
+        return remove(getNode(idx));
+    }
+    public T remove(Node<T> p){
+        p.next.pre=p.pre;
+        p.pre.next=p.next;
+        theSize--;
+        modCount++;
+        return p.data;
+    }
+
+    private Node<T> getNode(int idx,int lower, int upper){
+        Node<T> p;
+        if(idx<lower||idx>upper){
+            throw new IndexOutOfBoundsException();
+        }
+        if(idx<size()/2){
+            p=beginMarker.next;
+            for (int i = 0; i <idx ; i++) {
+                p=p.next;
+            };
+
+        }
+        else {
+            p=endMarker;
+            for (int i = size(); i>idx ; i--) {
+                p=p.pre;
+            };
+
+        }
+        return p;
+
+
+    }
+    //嵌套类1
+    private static class Node<T>{
+        public T data;
+        public Node<T> pre;
+        public Node<T>  next;
+        public Node(T d,Node<T> p,Node<T> n){
+            data=d;
+            pre=p;
+            next=n;
+        }
+    }
+//嵌套类2
+    private class LinkedListIterator implements Iterable<T>{
+        private Node<T> current=beginMarker.next;
+        private int expectedModCount=modCount;
+        private boolean okToRemove=false;
+
+        public boolean hasNext(){
+            return current!=endMarker;
+        }
+
+        public void remove(){
+            if(modCount!=expectedModCount){
+                throw new ConcurrentModificationException();
+            }
+            if(!okToRemove){
+                throw new IllegalStateException();
+            }
+
+            MyLinkedList.this.remove(current.pre);
+
+        }
+        public T next(){
+            if(modCount!=expectedModCount){
+                throw new ConcurrentModificationException();
+            }
+            if(!hasNext()){
+                throw new NoSuchElementException();
+            }
+            T nextItem=current.data;
+            current=current.next;
+            okToRemove=true;//被更新
+            return nextItem;
+        }
+
+
+        @Override
+        public Iterator<T> iterator() {
+            return null;
+        }
+    }
+}
