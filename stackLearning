@@ -1,1 +1,43 @@
+栈的实现:栈的链表实现:使用单链表  push:顶端插入  pop:删除顶端元素
+         数组实现:
+         
+栈的应用:
+1.平衡符号
+  LeetCode 20.有效的括号:给定一个值包含(.).{.}.[.]的字符串,半段字符串是否有效
+  时间复杂度度O(n),空间复杂度O(n)
+  public class StackLearning {
+
+    private HashMap<Character,Character> mappings;
+    //声明hashmap
+    public StackLearning(){
+        this.mappings=new HashMap<Character,Character>();
+        this.mappings.put(')','(');
+        this.mappings.put('}','{');
+        this.mappings.put(']','[');
+    }
+    public boolean isValid(String s){
+    //声明一个会使用到的栈
+        Stack<Character> stack=new Stack<Character>();
+//一次处理表达式的每个括号
+        for (int i = 0; i < s.length(); i++) {
+
+            char c=s.charAt(i);//charAt() 方法用于返回指定索引处的字符。索引范围为从 0 到 length() - 1。
+            
+            //如果当前的字符是闭括号
+            if(this.mappings.containsKey(c)){
+            //获取顶部元素,如果栈是空的,放一个#
+                char topElement=stack.isEmpty()? '#':stack.pop();
+                //如果顶部元素不匹配这个左括号
+                if(topElement!=this.mappings.get(c)){
+                    return false;
+                }
+            }
+            //如果他是一个开括号,推向栈
+            else {
+                stack.push(c);
+            }
+        }
+        return stack.isEmpty();//如果栈上还有数据,则s是一个非法的表达式
+    }
+}
 
