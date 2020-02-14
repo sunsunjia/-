@@ -51,3 +51,61 @@ public class MyQueue {
 }
 2.双端队列
 3.优先级队列
+4.应用
+  用栈实现队列
+  采用双栈实现队列
+  
+  public class MyQueue {
+
+    Stack<Integer> stackPush;
+    Stack<Integer> stackPop;
+    //声明数据类型
+    public MyQueue(){
+        stackPop=new Stack<Integer>();
+        stackPush=new Stack<Integer>();
+    }
+
+    public void Push(int x){
+        stackPush.push(x);
+    }
+    //把栈1中所有的元素移到栈2,接着把新元素压制栈2最后把栈2中所有元素弹出并压制栈1
+    public int pop(){
+        if(stackPop.isEmpty()&&stackPush.isEmpty()){
+            throw new RuntimeException("queue is empty!");
+        }
+        else {
+            if (stackPop.isEmpty()){
+                while (!stackPush.isEmpty()){
+                    stackPop.push(stackPush.pop());
+                }
+            }
+        }
+        return stackPop.peek();
+    }
+    public boolean empty(){
+        return stackPop.isEmpty()&&stackPush.isEmpty();
+    }
+}
+
+  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
