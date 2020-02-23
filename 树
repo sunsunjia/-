@@ -1,0 +1,81 @@
+1.树的实现
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+public class TreeNode<T> implements Iterable<T> {
+    /*
+
+    Iterator 未实现
+     */
+    @Override
+    public Iterator<T> iterator() {
+        return null;
+    }
+    //树节点
+    public T data;
+    //父亲节点
+    public TreeNode<T> parent;
+    //
+    public List<TreeNode<T>> Children;
+    //方便查询
+    private List<TreeNode<T>> elementsIndex;
+
+    public TreeNode(T data){
+        this.data=data;
+        this.Children=new LinkedList<TreeNode<T>>();
+        this.elementsIndex=new LinkedList<TreeNode<T>>();
+        this.elementsIndex.add(this);
+    }
+
+    //判断是否为根
+    public boolean isRoot(){
+
+        return parent==null;
+    }
+    //判断是否为叶子节点
+    public boolean isLeaf(){
+
+        return Children.size()==0;
+    }
+    //添加一个子节点
+    public TreeNode<T> addChild(T child){
+        TreeNode<T> ChildNode=new TreeNode<>(child);
+
+        ChildNode.parent=this;
+
+        this.Children.add(ChildNode);
+        this.registerChildForSearch(child);
+        return ChildNode;
+
+    }
+    //获取当前节点的层
+
+    public int getLevel(){
+        if(this.isRoot()){
+            return 0;
+        }else
+            return parent.getLevel()+1;
+    }
+    //为当前节点以及当前节点的所有父节点增加新的节点
+    public void registerChildForSearch(TreeNode<T> node) {
+        elementsIndex.add(node);
+        if(parent!=null){
+            parent.registerChildForSearch(node);
+        }
+    }
+    //从当前节点搜索某节点
+    public TreeNode<T> findTreeNode(Comparable<T> cmp){
+        forEach(TreeNode<T> element:this.elementsIndex){
+            T elData=element.data;
+            if(cmp.compareTo(elData)==0){
+                return element;
+            }
+            return null;
+        }
+
+    }
+
+
+}
+2.二叉树
